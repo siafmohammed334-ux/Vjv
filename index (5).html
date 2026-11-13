@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="داونلودنج">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<title>داونلودنج</title>
+<style>
+:root{--bg:#0b1020;--card:#151b33;--line:#252d4f;--txt:#eef1ff;--mut:#8f98c0;--a:#4f8cff;--b:#9b5cff;--ok:#2ecc8f;--err:#ff5d6c}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;min-height:100vh;padding:env(safe-area-inset-top) 16px 40px}
+.wrap{max-width:520px;margin:0 auto}
+header{text-align:center;padding:28px 0 18px}
+header img{width:84px;height:84px;border-radius:22px;box-shadow:0 10px 30px #4f8cff55}
+h1{margin:12px 0 2px;font-size:26px}
+header p{margin:0;color:var(--mut);font-size:14px}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:18px 0}
+.tab{background:var(--card);border:1px solid var(--line);color:var(--mut);border-radius:14px;padding:10px 2px;font-size:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:inherit}
+.tab svg{width:24px;height:24px}
+.tab.on{color:#fff;border-color:transparent;background:linear-gradient(135deg,var(--a),var(--b))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
+label{display:block;font-size:13px;color:var(--mut);margin:0 0 8px}
+.row{display:flex;gap:8px}
+input[type=url]{flex:1;min-width:0;background:#0d1226;border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:14px;font-size:15px;direction:ltr;text-align:left;font-family:inherit}
+input[type=url]:focus{outline:2px solid var(--a);border-color:transparent}
+.paste{background:#0d1226;border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:0 14px;cursor:pointer;font-family:inherit;font-size:13px}
+.q{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
+.q button{background:#0d1226;border:1px solid var(--line);color:var(--mut);border-radius:12px;padding:12px 4px;cursor:pointer;font-family:inherit;font-size:14px}
+.q button small{display:block;font-size:11px;margin-top:2px;opacity:.8}
+.q button.on{border-color:var(--a);color:#fff;background:#4f8cff22}
+.go{width:100%;border:0;border-radius:14px;padding:16px;font-size:17px;font-weight:700;color:#fff;cursor:pointer;background:linear-gradient(135deg,var(--a),var(--b));font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px}
+.go:disabled{opacity:.55}
+.go svg{width:22px;height:22px}
+.prev{display:none;gap:12px;margin-top:14px;align-items:center}
+.prev.show{display:flex}
+.prev img{width:96px;height:64px;object-fit:cover;border-radius:10px;background:#0d1226}
+.prev b{display:block;font-size:14px;line-height:1.4;max-height:2.8em;overflow:hidden}
+.prev span{font-size:12px;color:var(--mut)}
+.bar{height:6px;background:#0d1226;border-radius:6px;overflow:hidden;margin-top:14px;display:none}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a),var(--b));transition:width .2s}
+.msg{margin-top:12px;font-size:14px;min-height:20px}
+.msg.ok{color:var(--ok)}.msg.err{color:var(--err)}
+.note{color:var(--mut);font-size:12px;text-align:center;margin-top:18px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="/icon.svg" alt="">
+    <h1>داونلودنج</h1>
+    <p>حمّل الفيديو بدون علامة مائية</p>
+  </header>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="card">
+    <label id="lbl">الصق رابط الفيديو</label>
+    <div class="row">
+      <input type="url" id="url" placeholder="https://..." autocomplete="off" inputmode="url">
+      <button class="paste" id="paste">لصق</button>
+    </div>
+
+    <div class="prev" id="prev">
+      <img id="pimg" alt="">
+      <div><b id="ptitle"></b><span id="pmeta"></span></div>
+    </div>
+
+    <div class="q" id="q">
+      <button data-q="high" class="on">عالية<small>حتى 1080p</small></button>
+      <button data-q="medium">متوسطة<small>حتى 720p</small></button>
+      <button data-q="low">منخفضة<small>360p</small></button>
+    </div>
+
+    <button class="go" id="go">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+      <span>تحميل</span>
+    </button>
+    <div class="bar" id="bar"><i id="fill"></i></div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <p class="note">حمّل بس الفيديوهات اللي ليك حق فيها أو المسموح تحميلها.</p>
+</div>
+
+<script>
+const ICONS={
+ youtube:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3L10 15z"/></svg>',
+ tiktok:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.3 2.3 1.7 3.8 4 4v3.2c-1.5 0-2.9-.4-4-1.1v6.2a5.8 5.8 0 1 1-5.8-5.8c.3 0 .6 0 .9.1v3.3a2.6 2.6 0 1 0 1.7 2.4V3h3.2z"/></svg>',
+ instagram:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>',
+ facebook:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.2C16.700 2.200 15.800 2 14.700 2 12.300 2 10.700 3.500 10.700 6.100v2.400H8v3.400h2.700V22H14v-10.100h2.600l.4-3.400H14z"/></svg>',
+ twitter:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.8 3h3.100l-6.800 7.700L22 21h-6.200l-4.900-6.400L5.300 21H2.200l7.300-8.300L2 3h6.400l4.400 5.800L17.800 3zm-1.100 16.200h1.700L7.400 4.700H5.600l11.100 14.500z"/></svg>'
+};
+const NAMES={youtube:'يوتيوب',tiktok:'تيك توك',instagram:'انستجرام',facebook:'فيسبوك',twitter:'تويتر'};
+const HINT={youtube:'https://youtu.be/...',tiktok:'https://www.tiktok.com/@user/video/...',instagram:'https://www.instagram.com/reel/...',facebook:'https://www.facebook.com/watch/?v=...',twitter:'https://x.com/user/status/...'};
+let platform=localStorage.getItem('p')||'youtube', quality='high', timer=null;
+const $=id=>document.getElementById(id);
+
+function renderTabs(){
+  $('tabs').innerHTML=Object.keys(NAMES).map(k=>`<button class="tab ${k===platform?'on':''}" data-p="${k}">${ICONS[k]}<span>${NAMES[k]}</span></button>`).join('');
+  $('url').placeholder=HINT[platform];
+  $('lbl').textContent='الصق رابط فيديو '+NAMES[platform];
+}
+$('tabs').onclick=e=>{const b=e.target.closest('.tab');if(!b)return;platform=b.dataset.p;localStorage.setItem('p',platform);$('url').value='';reset();renderTabs()};
+$('q').onclick=e=>{const b=e.target.closest('button');if(!b)return;quality=b.dataset.q;[...$('q').children].forEach(x=>x.classList.toggle('on',x===b))};
+$('paste').onclick=async()=>{try{$('url').value=await navigator.clipboard.readText();$('url').dispatchEvent(new Event('input'))}catch{msg('اللصق مش متاح، الصق الرابط بإيدك','err')}};
+
+function msg(t,c=''){$('msg').textContent=t;$('msg').className='msg '+c}
+function reset(){$('prev').classList.remove('show');$('bar').style.display='none';msg('')}
+function fmt(s){if(!s)return'';const m=Math.floor(s/60);return m+':'+String(Math.floor(s%60)).padStart(2,'0')}
+
+$('url').addEventListener('input',()=>{
+  clearTimeout(timer);reset();
+  const u=$('url').value.trim();
+  if(!/^https?:\/\//i.test(u))return;
+  timer=setTimeout(async()=>{
+    try{
+      const r=await fetch('/api/info',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:u,platform})});
+      const d=await r.json();
+      if(!r.ok){msg(d.error||'خطأ','err');return}
+      $('pimg').src=d.thumbnail||'';$('ptitle').textContent=d.title||'';
+      $('pmeta').textContent=[d.uploader,fmt(d.duration)].filter(Boolean).join(' • ');
+      $('prev').classList.add('show');
+    }catch{}
+  },600);
+});
+
+$('go').onclick=async()=>{
+  const u=$('url').value.trim();
+  if(!u){msg('الصق الرابط الأول','err');return}
+  $('go').disabled=true;$('bar').style.display='block';$('fill').style.width='3%';
+  msg('جاري التحميل... استنى شوية');
+  try{
+    const qs=new URLSearchParams({url:u,platform,quality});
+    const r=await fetch('/api/download?'+qs);
+    if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.error||'فشل التحميل')}
+    const total=+r.headers.get('Content-Length')||0, rd=r.body.getReader(), parts=[];let got=0;
+    while(true){const{done,value}=await rd.read();if(done)break;parts.push(value);got+=value.length;if(total)$('fill').style.width=Math.max(5,got/total*100)+'%'}
+    const cd=r.headers.get('Content-Disposition')||'';
+    const m=cd.match(/filename\*=UTF-8''([^;]+)/);
+    const name=m?decodeURIComponent(m[1]):'video.mp4';
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob(parts,{type:'video/mp4'}));a.download=name;
+    document.body.appendChild(a);a.click();a.remove();
+    $('fill').style.width='100%';msg('تم التحميل ✔','ok');
+  }catch(e){msg(e.message||'فشل التحميل','err')}
+  finally{$('go').disabled=false}
+};
+
+renderTabs();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+</script>
+</body>
+</html>
